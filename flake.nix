@@ -1,5 +1,5 @@
 {
-  description = "The emitter module that use echo for tataku.vim";
+  description = "Shared actions for me";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
