@@ -83,6 +83,8 @@ jobs:
     needs: path-filter
     if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/show-nix-diff.yaml
+    permissions:
+      pull-requests: write
     with:
       attribute: devShells.x86_64-linux.default
     secrets:
