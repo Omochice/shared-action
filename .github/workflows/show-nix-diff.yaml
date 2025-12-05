@@ -29,11 +29,13 @@ jobs:
       - name: Run dix
         id: dix
         # NOTE: referred to natsukium/dotfiles
+        env:
+          ATTRIBUTE: ${{ inputs.attribute }}
         run: |
-          DIX_OUTPUT=$(dix \
-            "$(nix path-info --derivation "github:${{ github.repository }}#${{ inputs.attribute }}")" \
-            "$(nix path-info --derivation ".#${{ inputs.attribute }}")" \
-            2>&1) || DIX_OUTPUT="Failed to execute dix"
+          DIX_OUTPUT="$(dix \
+            "$(nix path-info --derivation "github:${{ github.repository }}#${ATTRIBUTE}")" \
+            "$(nix path-info --derivation ".#${ATTRIBUTE}")" \
+            2>&1)" || DIX_OUTPUT="Failed to execute dix"
 
           # Extract drv paths from <<< and >>> lines
           OLD_DRV="$(echo "$DIX_OUTPUT" | grep '^<<<' | sed 's/^<<< //')"
@@ -42,7 +44,7 @@ jobs:
           if [ "$OLD_DRV" = "$NEW_DRV" ] && [ -n "$OLD_DRV" ]; then
             {
               echo 'DIFF_OUTPUT<<EOF'
-              echo '# `${{ inputs.attribute }}` changes'
+              echo "# \`${ATTRIBUTE}\` changes"
               echo ''
               echo 'No changes detected.'
               echo 'EOF'
@@ -50,7 +52,7 @@ jobs:
           else
             {
               echo 'DIFF_OUTPUT<<EOF'
-              echo '# `${{ inputs.attribute }}` changes'
+              echo "# \`${ATTRIBUTE}\` changes"
               echo ''
               echo '```console'
               echo "$DIX_OUTPUT"
